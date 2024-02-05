@@ -8,14 +8,14 @@
 #define PORT 80 // Porta padrão para verificação
 
 // Função para verificar se a porta está aberta em um host
-int check_port(const char *host, int port) {
+void check_port(const char *host, int port) {
     int sockfd;
     struct sockaddr_in target;
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         perror("Erro ao criar socket");
-        return -1;
+        return;
     }
 
     target.sin_family = AF_INET;
@@ -24,20 +24,15 @@ int check_port(const char *host, int port) {
     if (inet_pton(AF_INET, host, &(target.sin_addr)) <= 0) {
         perror("Erro ao converter endereço");
         close(sockfd);
-        return -1;
+        return;
     }
 
     // Tentar se conectar à porta
     if (connect(sockfd, (struct sockaddr *)&target, sizeof(target)) == 0) {
         printf("Porta %d aberta em %s\n", port, host);
-        close(sockfd);
-        return 0;
-    } else {
-        printf("Porta %d fechada em %s\n", port, host);
     }
 
     close(sockfd);
-    return -1;
 }
 
 int main() {
